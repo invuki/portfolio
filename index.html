@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benny Lin — @invuki</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Page-specific additions on top of the base token system. */
+
+  html { scroll-behavior: smooth; }
+  body { overflow-x: hidden; }
+
+  /* ---------- Loader gate ---------- */
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    background-color: var(--color-background);
+    cursor: pointer;
+  }
+  #loader .loader-mark {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-primary-hover);
+  }
+  #loader .loader-cta {
+    font-family: var(--font-family-display);
+    font-weight: var(--font-weight-black);
+    font-size: clamp(2.5rem, 8vw, var(--font-size-5xl));
+    color: var(--color-foreground);
+    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  #loader .loader-cta::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 60%, transparent);
+    animation: pulse-ring 2s var(--ease-standard) infinite;
+  }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 45%, transparent); }
+    70%  { box-shadow: 0 0 0 18px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+  #loader .loader-hint {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-neutral-300);
+  }
+  body.is-locked { overflow: hidden; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--spacing-page-gutter);
+    opacity: 0;
+  }
+  .nav-mark {
+    font-family: var(--font-family-display);
+    font-weight: var(--font-weight-black);
+    font-size: var(--font-size-lg);
+  }
+  .nav-links { display: flex; gap: var(--space-6); }
+  .nav-links a {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+  .nav-links a:hover { color: var(--color-link-hover); }
+
+  /* ---------- Hero ---------- */
+  #main { opacity: 0; }
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: var(--spacing-section);
+  }
+  .hero h1 {
+    font-size: clamp(2.75rem, 9vw, 5.5rem);
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .hero h1 .word { display: inline-block; margin-right: 0.28em; overflow: hidden; }
+  .hero h1 .word span { display: inline-block; }
+  .hero-tagline { max-width: 46ch; }
+  .hero-meta {
+    display: flex;
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  /* ---------- Work grid ---------- */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+  .work-card { transition: transform var(--duration-base) var(--ease-standard), border-color var(--duration-base) var(--ease-standard); }
+  .work-card:hover { transform: translateY(-4px); border-color: var(--color-border-strong); }
+  .work-card .badge { margin-bottom: var(--space-3); }
+  .reveal { opacity: 0; transform: translateY(24px); }
+
+  /* ---------- About ---------- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+  .skill-list { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+
+  /* ---------- Contact ---------- */
+  .contact-card { max-width: 560px; }
+
+  footer {
+    padding: var(--space-6) var(--spacing-page-gutter);
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-neutral-300);
+  }
+
+  @media (max-width: 720px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="is-locked">
+
+<div id="loader">
+  <span class="loader-mark">@invuki</span>
+  <span class="loader-cta">Click to open</span>
+  <span class="loader-hint">Benny Lin — Portfolio</span>
+</div>
+
+<nav class="nav">
+  <span class="nav-mark">BL</span>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<div id="main">
+
+  <section class="section hero">
+    <div class="container">
+      <span class="text-eyebrow">Portfolio / @invuki</span>
+      <h1 id="hero-heading">Benny Lin</h1>
+      <p class="text-lead hero-tagline">Placeholder tagline. Replace with one line describing what you make and who it's for.</p>
+      <div class="hero-meta">
+        <span class="text-mono text-muted">Based in — </span>
+        <span class="text-mono text-muted">Available for — </span>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:32px;">
+        <a href="#work" class="btn btn-primary">View work</a>
+        <a href="#contact" class="btn btn-secondary">Get in touch</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="work">
+    <div class="container">
+      <span class="text-eyebrow reveal">Selected work</span>
+      <h2 class="reveal">Recent projects</h2>
+      <div class="work-grid">
+        <div class="card work-card reveal">
+          <span class="badge badge-info">Category</span>
+          <h4>Project title</h4>
+          <p style="margin-bottom:0;">Short description of the project, the problem it solved, and your role in it.</p>
+        </div>
+        <div class="card work-card reveal">
+          <span class="badge">Category</span>
+          <h4>Project title</h4>
+          <p style="margin-bottom:0;">Short description of the project, the problem it solved, and your role in it.</p>
+        </div>
+        <div class="card work-card reveal">
+          <span class="badge badge-warning">Category</span>
+          <h4>Project title</h4>
+          <p style="margin-bottom:0;">Short description of the project, the problem it solved, and your role in it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="container about-grid">
+      <div class="reveal">
+        <span class="text-eyebrow">About</span>
+        <h2>Bio</h2>
+        <p>Placeholder bio. Write two or three sentences about your background, what you're currently focused on, and what drives your work.</p>
+      </div>
+      <div class="panel reveal">
+        <span class="text-mono text-muted" style="font-size:12px;">SKILLS</span>
+        <div class="skill-list">
+          <span class="badge">Skill</span>
+          <span class="badge">Skill</span>
+          <span class="badge">Skill</span>
+          <span class="badge">Skill</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="container">
+      <span class="text-eyebrow reveal">Contact</span>
+      <h2 class="reveal">Let's talk</h2>
+      <div class="card contact-card reveal">
+        <label class="text-mono text-muted" style="font-size:12px; display:block; margin-bottom:6px;">EMAIL</label>
+        <input class="input" type="email" placeholder="you@example.com">
+        <label class="text-mono text-muted" style="font-size:12px; display:block; margin:16px 0 6px;">MESSAGE</label>
+        <textarea class="input" rows="3" placeholder="Write a message"></textarea>
+        <button class="btn btn-primary" style="margin-top:16px; width:100%;">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Benny Lin</span>
+    <span>@invuki</span>
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Split the hero heading into per-word, per-letter spans for the reveal animation.
+const heading = document.getElementById('hero-heading');
+heading.innerHTML = heading.textContent.split(' ').map(word =>
+  `<span class="word">${word.split('').map(ch => `<span>${ch}</span>`).join('')}</span>`
+).join('');
+
+function openSite() {
+  document.body.classList.remove('is-locked');
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: reduced ? 0.01 : 0.8 } });
+
+  tl.to('#loader .loader-cta, #loader .loader-mark, #loader .loader-hint', { opacity: 0, y: -12, duration: reduced ? 0.01 : 0.4, stagger: 0.05 })
+    .to('#loader', { autoAlpha: 0, duration: reduced ? 0.01 : 0.5 }, '-=0.15')
+    .set('#loader', { display: 'none' })
+    .to('.nav', { opacity: 1 }, '<')
+    .fromTo('#main', { opacity: 0 }, { opacity: 1, duration: reduced ? 0.01 : 0.6 }, '<')
+    .from('.hero .text-eyebrow', { opacity: 0, y: 12 }, '<')
+    .from('.hero h1 .word span', { yPercent: 110, opacity: 0, stagger: 0.02 }, '-=0.3')
+    .from('.hero-tagline, .hero-meta, .hero .btn', { opacity: 0, y: 16, stagger: 0.08 }, '-=0.4');
+}
+
+document.getElementById('loader').addEventListener('click', openSite, { once: true });
+
+// Scroll-triggered reveals for content below the fold.
+gsap.utils.toArray('.reveal').forEach((el) => {
+  gsap.to(el, {
+    opacity: 1,
+    y: 0,
+    duration: reduced ? 0.01 : 0.7,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' }
+  });
+});
+</script>
+
+</body>
+</html>

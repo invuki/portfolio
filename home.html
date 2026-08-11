@@ -41,6 +41,7 @@
     align-items: center;
     gap: var(--space-4);
   }
+  #loader .wave-letter { display: inline-block; }
   #loader .loader-cta::after {
     content: "";
     width: 14px;
@@ -314,12 +315,27 @@ heading.innerHTML = heading.textContent.split(' ').map(word =>
   `<span class="word">${word.split('').map(ch => `<span>${ch}</span>`).join('')}</span>`
 ).join('');
 
-// Whimsical idle loop on the loader text while it waits to be clicked.
+// Split a loader line into per-letter spans so the wave can travel across it.
+function splitLetters(el) {
+  el.innerHTML = el.textContent.split('').map(ch =>
+    `<span class="wave-letter">${ch === ' ' ? '&nbsp;' : ch}</span>`
+  ).join('');
+  return el.querySelectorAll('.wave-letter');
+}
+
+// Whimsical idle loop: one wave travels through all three loader lines together
+// so the "click..." text does not animate in isolation from its surroundings.
 let bounceLoop;
 if (!reduced) {
-  bounceLoop = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } })
-    .to('#loader-cta', { y: -14, rotation: -2, duration: 0.6 })
-    .to('#loader-cta', { y: 0, rotation: 2, duration: 0.6 });
+  const markLetters = splitLetters(document.querySelector('#loader .loader-mark'));
+  const ctaLetters = splitLetters(document.getElementById('loader-cta'));
+  const hintLetters = splitLetters(document.querySelector('#loader .loader-hint'));
+
+  bounceLoop = gsap.timeline({ repeat: -1 });
+  bounceLoop
+    .to(markLetters, { y: -4, duration: 0.5, ease: 'sine.inOut', stagger: { each: 0.04, yoyo: true, repeat: 1 } }, 0)
+    .to(ctaLetters, { y: -16, duration: 0.5, ease: 'sine.inOut', stagger: { each: 0.05, yoyo: true, repeat: 1 } }, 0.08)
+    .to(hintLetters, { y: -4, duration: 0.5, ease: 'sine.inOut', stagger: { each: 0.04, yoyo: true, repeat: 1 } }, 0.16);
 }
 
 function openSite() {

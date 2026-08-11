@@ -124,6 +124,38 @@
   .work-card .badge { margin-bottom: var(--space-3); }
   .reveal { opacity: 0; transform: translateY(24px); }
 
+  /* ---------- Gallery ---------- */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+  .gallery-slot {
+    aspect-ratio: 4 / 5;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-control-default);
+    background-color: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    color: var(--color-neutral-300);
+    overflow: hidden;
+  }
+  .gallery-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gallery-slot span {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
   /* ---------- About ---------- */
   .about-grid {
     display: grid;
@@ -155,14 +187,15 @@
 
 <div id="loader">
   <span class="loader-mark">@invuki</span>
-  <span class="loader-cta">Click to open</span>
-  <span class="loader-hint">Benny Lin — Portfolio</span>
+  <span class="loader-cta" id="loader-cta">click...</span>
+  <span class="loader-hint">currently web designer @ ugetenergy.com</span>
 </div>
 
 <nav class="nav">
   <span class="nav-mark">BL</span>
   <div class="nav-links">
     <a href="#work">Work</a>
+    <a href="#gallery">Gallery</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </div>
@@ -172,7 +205,7 @@
 
   <section class="section hero">
     <div class="container">
-      <span class="text-eyebrow">Portfolio / @invuki</span>
+      <span class="text-eyebrow">Portfolio // @invuki</span>
       <h1 id="hero-heading">Benny Lin</h1>
       <p class="text-lead hero-tagline">Placeholder tagline. Replace with one line describing what you make and who it's for.</p>
       <div class="hero-meta">
@@ -210,20 +243,38 @@
     </div>
   </section>
 
+  <section class="section" id="gallery">
+    <div class="container">
+      <span class="text-eyebrow reveal">Gallery</span>
+      <h2 class="reveal">Visual work</h2>
+      <!-- Replace a slot's contents with <img src="path/to/file.jpg" alt="..."> to add a piece. Add or remove slots as needed. -->
+      <div class="gallery-grid">
+        <div class="gallery-slot reveal"><span>Add image</span></div>
+        <div class="gallery-slot reveal"><span>Add image</span></div>
+        <div class="gallery-slot reveal"><span>Add image</span></div>
+        <div class="gallery-slot reveal"><span>Add image</span></div>
+        <div class="gallery-slot reveal"><span>Add image</span></div>
+        <div class="gallery-slot reveal"><span>Add image</span></div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="about">
     <div class="container about-grid">
       <div class="reveal">
         <span class="text-eyebrow">About</span>
         <h2>Bio</h2>
-        <p>Placeholder bio. Write two or three sentences about your background, what you're currently focused on, and what drives your work.</p>
+        <p>Senior @ Stuyvesant High School</p>
+        <p>Avid designer: Graphics, UI/UX, Logos</p>
+        <p>Business & Finance</p>
       </div>
       <div class="panel reveal">
         <span class="text-mono text-muted" style="font-size:12px;">SKILLS</span>
         <div class="skill-list">
-          <span class="badge">Skill</span>
-          <span class="badge">Skill</span>
-          <span class="badge">Skill</span>
-          <span class="badge">Skill</span>
+          <span class="badge">UI/UX Designer</span>
+          <span class="badge">Graphic Designer</span>
+          <span class="badge">Social Media Management</span>
+          <span class="badge">HTML/CSS/JS</span>
         </div>
       </div>
     </div>
@@ -263,7 +314,16 @@ heading.innerHTML = heading.textContent.split(' ').map(word =>
   `<span class="word">${word.split('').map(ch => `<span>${ch}</span>`).join('')}</span>`
 ).join('');
 
+// Whimsical idle loop on the loader text while it waits to be clicked.
+let bounceLoop;
+if (!reduced) {
+  bounceLoop = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } })
+    .to('#loader-cta', { y: -14, rotation: -2, duration: 0.6 })
+    .to('#loader-cta', { y: 0, rotation: 2, duration: 0.6 });
+}
+
 function openSite() {
+  if (bounceLoop) bounceLoop.kill();
   document.body.classList.remove('is-locked');
   const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: reduced ? 0.01 : 0.8 } });
 
